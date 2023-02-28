@@ -13,11 +13,14 @@ void galutinis(vector<Studentas>& studentai) {
         double vidurkis = 0;
         double mediana = 0;
         if (studentai[i].nd_rezultatai.size() > 0) {
+            // Galutinio balo apskaičiavimas su rezultatų vidurkiu
             vidurkis = accumulate(studentai[i].nd_rezultatai.begin(), studentai[i].nd_rezultatai.end(), 0.0) / studentai[i].nd_rezultatai.size();
 
+            // Galutinio balo apskaičiavimas su rezultatų mediana
             int dydis = studentai[i].nd_rezultatai.size();
             sort(studentai[i].nd_rezultatai.begin(), studentai[i].nd_rezultatai.end());
 
+            // Jei yra lyginis skaičius rezultatų, imamas dviejų vidurinių skaičių vidurkis, jei nelyginis, imamas vidurinis skaičius
             if (dydis % 2 == 0) {
                 mediana = (double)(studentai[i].nd_rezultatai[dydis / 2 - 1] + studentai[i].nd_rezultatai[dydis / 2]) / 2;
             } else {
@@ -73,12 +76,15 @@ int main() {
                 }
             } while(true);
 
+            // Generuojami atsitiktiniai namų darbų bei egzamino rezultatai
             srand(time(NULL));
             for(int i = 0; i < kiek_nd; i++) {
                 nd_rezultatas = rand() % 10 + 1;
                 egz_rez = rand() % 10 + 1;
 
                 cout << "Atsitiktinis [" << naujas_studentas.vardas << " " << naujas_studentas.pavarde << "] namu darbu rezultatas: " << nd_rezultatas << endl;
+
+                // Atsitiktiniai rezultatai pridedami į vektoriaus pabaigą
                 nd_rezultatai.push_back(nd_rezultatas);
             }
 
@@ -97,6 +103,7 @@ int main() {
                     if(cin.fail()) {
                         throw invalid_argument("Klaida: ivestas neteisingas simbolis.");
                     } if(nd_rezultatas != 0 && nd_rezultatas > 0 && nd_rezultatas <= 10) {
+                        // Įvestas rezultatas pridedamas į vektoriaus pabaigą
                         nd_rezultatai.push_back(nd_rezultatas);
                     } else if(nd_rezultatas < 0 || nd_rezultatas > 10) {
                         cout << "Klaida: pazymys turi buti intervale [1; 10]." << endl;
@@ -113,7 +120,6 @@ int main() {
             } while (nd_rezultatas != 0 || is_naujo2 != false);
 
             naujas_studentas.nd_rezultatai = nd_rezultatai;
-
 
             do {
                 try {
@@ -143,10 +149,9 @@ int main() {
             is_naujo = true;
             continue;
         }
+
         if(nd_rezultatai.size() < 1) {
             cout << "Klaida: truksta rezultatu. [" << naujas_studentas.vardas << " " << naujas_studentas.pavarde << "] bus neirasytas." << endl;
-
-            // is_naujo = true;
         }
 
         cout << "-----------------------------------------------------------------------" << endl;
@@ -184,6 +189,7 @@ int main() {
         cout << "-----------------------------------------------------------------------" << endl << endl;
 
         if(pasirinkimas == 'Y' || pasirinkimas == 'y') {
+            // Mokinių duomenų išrašymas su medianos galutiniu balu
             cout << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(5) << left << "Galutinis (Med.)" << endl;
             cout << "---------------------------------------------------" << endl;
             for (int i = 0; i < studentai.size(); i++) {
@@ -194,6 +200,7 @@ int main() {
 
             break;
         } if(pasirinkimas == 'N' || pasirinkimas == 'n') {
+            // Mokinių duomenų išrašymas su vidurkio galutiniu balu
             cout << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(5) << left << "Galutinis (Vid.)" << endl;
             cout << "---------------------------------------------------" << endl;
             for (int i = 0; i < studentai.size(); i++) {

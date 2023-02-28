@@ -1,12 +1,12 @@
 #include "libraries.h"
 
-// Define a struct for each studentas
 struct Studentas {
     string vardas, pavarde;
     int kiek_rez, egz_rez;
     int *rezultatai;
 };
 
+// Galutinio balo apskaičiavimas su rezultatų vidurkiu
 double galutinisVid(Studentas studentas) {
     double suma = 0;
     for (int i = 0; i < studentas.kiek_rez; i++)
@@ -15,24 +15,23 @@ double galutinisVid(Studentas studentas) {
 
     return vidurkis * 0.4 + studentas.egz_rez * 0.6;
 }
+// Galutinio balo apskaičiavimas su rezultatų mediana
 double galutinisMed(Studentas studentas) {
-    // Sort the rezultatai array from lowest to highest
     sort(studentas.rezultatai, studentas.rezultatai + studentas.kiek_rez);
 
-    // Calculate the median of the rezultatai
     double mediana;
+    
+    // Jei yra lyginis skaičius rezultatų, imamas dviejų vidurinių skaičių vidurkis, jei nelyginis, imamas vidurinis skaičius
     if (studentas.kiek_rez % 2 == 0) {
         mediana = (studentas.rezultatai[studentas.kiek_rez / 2 - 1] + studentas.rezultatai[studentas.kiek_rez / 2]) / 2.0;
     } else {
         mediana = studentas.rezultatai[studentas.kiek_rez / 2];
     }
 
-    // Calculate the final score using the median and the exam rez
     return mediana * 0.4 + studentas.egz_rez * 0.6;
 }
 
 int main() {
-    // Initialize an array of studentai
     int max_studentai = 5, kiek_studentai = 0, kiek_nd;
     double galutinis_vid, galutinis_med;
 
@@ -44,14 +43,12 @@ int main() {
     do {
         cout << "-----------------------------------------------------------------------" << endl;
 
-        // Prompt the user to enter data for a new studentas
         cout << "Iveskite studento varda: ";
         cin >> studentai[kiek_studentai].vardas;
         cout << "Iveskite studento pavarde: ";
         cin >> studentai[kiek_studentai].pavarde; cout << endl;
 
         int rez, egz_rez;
-        // Initialize an array for the studentas's rezultatai
         studentai[kiek_studentai].kiek_rez = 0;
         studentai[kiek_studentai].rezultatai = new int[1];
         
@@ -78,11 +75,13 @@ int main() {
                 }
             } while(true);
 
+            // Generuojami atsitiktiniai namų darbų bei egzamino rezultatai
             srand(time(NULL));
             for(int i = 0; i < kiek_nd; i++) {
                 studentai[kiek_studentai].kiek_rez++;
                 rez = rand() % 10 + 1;
                 egz_rez = rand() % 10 + 1;
+
                 int *laik_rez = new int[studentai[kiek_studentai].kiek_rez];
                 for (int i = 0; i < studentai[kiek_studentai].kiek_rez-1; i++)
                     laik_rez[i] = studentai[kiek_studentai].rezultatai[i];
@@ -139,7 +138,6 @@ int main() {
             }
             cout << endl;
 
-            // Prompt the user to enter the studentas's exam rez
             do {
                 try {
                     cout << "Iveskite [" << studentai[kiek_studentai].vardas << " " << studentai[kiek_studentai].pavarde << "] egzamino rezultata intervale [1; 10]: ";
@@ -169,11 +167,8 @@ int main() {
             continue;
         }
 
-        // Prompt the user to enter the studentas's rezultatai
-
         cout << "-----------------------------------------------------------------------" << endl;
 
-        // Prompt the user to enter another studentas or finish
         do {
             cout << "Ar norite ivesti nauja studenta? (Y/N): ";
             cin >> pasirinkimas;
@@ -183,7 +178,6 @@ int main() {
             } else {break;}
         } while(pasirinkimas != 'Y' || pasirinkimas != 'y');
 
-        // Increase the size of the studentai array if necessary
         kiek_studentai++;
         if (kiek_studentai == max_studentai) {
             max_studentai *= 2;
@@ -215,6 +209,7 @@ int main() {
         cout << "-----------------------------------------------------------------------" << endl << endl;
 
         if(pasirinkimas == 'Y' || pasirinkimas == 'y') {
+            // Mokinių duomenų išrašymas su medianos galutiniu balu
             cout << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(5) << left << "Galutinis (Med.)" << endl;
             cout << "---------------------------------------------------" << endl;
             for (int i = 0; i < kiek_studentai; i++) {
@@ -227,6 +222,7 @@ int main() {
 
             break;
         } if(pasirinkimas == 'N' || pasirinkimas == 'n') {
+            // Mokinių duomenų išrašymas su vidurkio galutiniu balu
             cout << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(5) << left << "Galutinis (Vid.)" << endl;
             cout << "---------------------------------------------------" << endl;
             for (int i = 0; i < kiek_studentai; i++) {
