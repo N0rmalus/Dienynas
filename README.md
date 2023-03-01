@@ -10,4 +10,4 @@ Tai paprasta C++ programa, kurioje vartotojas įrašinėja naujus mokinius. Moki
 
 ---
 
-**libraries.cpp** - failas, kuriame saugomos visos bibliotekos ir jų pagrindinės funkcijos, kurios yra reikalingos šiai programai veikti.
+**libraries.h** - failas, kuriame saugomos visos bibliotekos ir jų pagrindinės funkcijos, kurios yra reikalingos šiai programai veikti.
