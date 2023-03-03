@@ -1,0 +1,11 @@
+Vardas 		Pavarde          ND1    ND2     ND3     ND4     ND5     ND6     Egz.
+EDP         445         	 8      5       8       3       3       7  	8
+Jane        Doe         	 2      6       9       9       6       7 	7
+Walter      White         	 8      5       8       3       3       7  	8
+Bill        Cosby         	 24     6       4       9       6       7 	7
+Chris       Brown          	 4      6       3       7       6       4	5
+John        Doe         	 8      5       8       3       3       7  	8
+Peter       Phile          	 4      6       3       7       6       4	5
+Joe         Swanson        	 8      5       8       3       3       7  	8
+O.J.        Simpson        	 2      6       9       9       6       7 	7
+Linas       Hermanas       	 4      6       3       7       6       4	5

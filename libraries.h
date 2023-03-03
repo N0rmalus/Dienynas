@@ -4,13 +4,16 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include <fstream>
+#include <sstream>
 #include <random>
 
+using std::invalid_argument;
+using std::istringstream;
+using std::ifstream;
+using std::ofstream;
 using std::string;
 using std::vector;
-using std::invalid_argument;
-using std::mt19937;
-using std::uniform_int_distribution;
 using std::cout;
 using std::cin;
 using std::endl;
@@ -22,3 +25,4 @@ using std::fixed;
 using std::srand;
 using std::accumulate;
 using std::sort;
+using std::getline;
