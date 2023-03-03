@@ -76,11 +76,11 @@ int main() {
             } while(true);
 
             // Generuojami atsitiktiniai namų darbų bei egzamino rezultatai
-            srand(time(NULL));
+            mt19937 mt(1729);
+            uniform_int_distribution<int> dist(1, 10);
             for(int i = 0; i < kiek_nd; i++) {
-                studentai[kiek_studentai].kiek_rez++;
-                rez = rand() % 10 + 1;
-                egz_rez = rand() % 10 + 1;
+                rez = dist(mt);
+                egz_rez = dist(mt);
 
                 int *laik_rez = new int[studentai[kiek_studentai].kiek_rez];
                 for (int i = 0; i < studentai[kiek_studentai].kiek_rez-1; i++)

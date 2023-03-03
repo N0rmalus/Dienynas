@@ -77,10 +77,11 @@ int main() {
             } while(true);
 
             // Generuojami atsitiktiniai namų darbų bei egzamino rezultatai
-            srand(time(NULL));
+            mt19937 mt(1729);
+            uniform_int_distribution<int> dist(1, 10);
             for(int i = 0; i < kiek_nd; i++) {
-                nd_rezultatas = rand() % 10 + 1;
-                egz_rez = rand() % 10 + 1;
+                nd_rezultatas = dist(mt);
+                egz_rez = dist(mt);
 
                 cout << "Atsitiktinis [" << naujas_studentas.vardas << " " << naujas_studentas.pavarde << "] namu darbu rezultatas: " << nd_rezultatas << endl;
 
