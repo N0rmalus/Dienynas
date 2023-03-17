@@ -44,6 +44,7 @@ void atsitiktiniai_rez(int nd_rezultatas, int egz_rez, int kiek_nd, Studentas& n
     // Generuojami atsitiktiniai namų darbų bei egzamino rezultatai
     std::mt19937 mt(1729);
     std::uniform_int_distribution<int> dist(1, 10);
+    srand(time(NULL));
     for(int i = 0; i < kiek_nd; i++) {
         nd_rezultatas = dist(mt);
         egz_rez = dist(mt);
@@ -107,30 +108,15 @@ void rasomi_rez(bool is_naujo2, int nd_rezultatas, int egz_rez, Studentas& nauja
         }
     } while(true);  
 }
-void isvesti(vector<Studentas>& studentai, std::chrono::duration<double> &dRusiavimas) {
-    ofstream rasoL("luzeriai.txt");
-    ofstream rasoW("neluzeriai.txt");
+void spausdinti(vector<Studentas>& studentai) {
+    cout << "Rezultatas rezultatai.txt faile";
+    ofstream raso("rezultatai.txt");
 
     // Mokinių duomenų išrašymas
-    rasoL << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
-    rasoW << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
-    rasoL << "--------------------------------------------------------------------" << endl;
-    rasoW << "--------------------------------------------------------------------" << endl;
+    raso << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
+    raso << "--------------------------------------------------------------------" << endl;
     for (const auto& s : studentai) {
         if(s.nd_rezultatai.empty() || s.galutinis_vid <= 0 || s.galutinis_med <= 0) {continue;}
-
-        auto sRusiavimas = std::chrono::system_clock::now();
-        if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0) {
-            rasoL << setw(15) << left << s.pavarde << setw(15) << left << s.vardas << setw(20) << left << fixed << setprecision(2) << s.galutinis_vid << fixed << setprecision(2) << s.galutinis_med << endl;
-        } if(s.galutinis_vid >= 5.0 && s.galutinis_med >= 5.0) {
-            rasoW << setw(15) << left << s.pavarde << setw(15) << left << s.vardas << setw(20) << left << fixed << setprecision(2) << s.galutinis_vid << fixed << setprecision(2) << s.galutinis_med << endl;
-        }
-        auto eRusiavimas = std::chrono::system_clock::now();
-        dRusiavimas = eRusiavimas - sRusiavimas;
+        raso << setw(15) << left << s.pavarde << setw(15) << left << s.vardas << setw(20) << left << fixed << setprecision(2) << s.galutinis_vid << fixed << setprecision(2) << s.galutinis_med << endl;
     }    
-
-    cout << "Baigta. Rezultatas luzeriai.txt / neluzeriai.txt failuose.";
-
-    rasoL.close();
-    rasoW.close();
 }

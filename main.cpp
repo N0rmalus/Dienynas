@@ -3,57 +3,18 @@
 
 int main() {
     vector<Studentas> studentai;
-    string vardas, pavarde, failas;
     int kiek_nd;
+    string vardas, pavarde, failas;
     char pasirinkimas, pasirinkimas2, skaityti;
     bool is_naujo = false, is_naujo2 = false;
 
-    std::chrono::duration<double> dRusiavimas, dGeneravimas;
-    auto sPrograma = std::chrono::system_clock::now();
     do {
         cout << "-----------------------------------------------------------------------" << endl;
         cout << "Duomenis skaityti is failo? (Y/N): ";
         cin >> skaityti;
 
         if(skaityti == 'Y' || skaityti == 'y') {
-            char pasirinkti;
-
-            do {
-                cout << endl << "Sugeneruoti faila? (Y/N): ";
-                cin >> pasirinkti;
-
-                if(pasirinkti == 'Y' || pasirinkti == 'y') {
-                    int kiek_studentu, kiek_nd2;
-                    string failasGen;
-
-                    cout << "Iveskite studentu kieki: ";
-                    cin >> kiek_studentu;
-
-                    cout << "Iveskite namu darbu rezultatu kieki: ";
-                    cin >> kiek_nd2;
-
-                    cout << "Iveskite sugeneruoto failo pavadinima: ";
-                    cin >> failasGen; cout << endl;
-
-                    cout << "Failas [" << failasGen << "] generuojamas... ";
-                    auto sGeneravimas = std::chrono::system_clock::now();
-                    generatorius(failasGen, kiek_studentu, kiek_nd2);
-                    auto eGeneravimas = std::chrono::system_clock::now();
-                    dGeneravimas = eGeneravimas - sGeneravimas;
-
-                    cout << "-----------------------------------------------------------------------" << endl;
-
-                    break;
-                } else if(pasirinkti == 'N' || pasirinkti == 'n') {
-                    break;
-                } else {
-                    cout << endl << "Tokio pasirinkimo [" << pasirinkti << "] nera.";
-
-                    continue;
-                }
-            } while(true);
-
-            cout << "Failu sarasas: "; system("ls *.txt");
+            cout << endl << "Failu sarasas: "; system("ls *.txt");
             cout << "Pasirinkite faila: ";
             cin >> failas;
 
@@ -64,7 +25,6 @@ int main() {
                 is_naujo = true;
                 continue;
             } else {
-                sPrograma = std::chrono::system_clock::now();
                 // Praleisti pirmą eilutę
                 string headers;
                 getline(skaito, headers);
@@ -84,7 +44,6 @@ int main() {
 
                     if (naujas_studentas.nd_rezultatai.empty()) {
                         cout << "Nerasta rezultatu [" << naujas_studentas.vardas << " " << naujas_studentas.pavarde << "]" << endl;
-                        
                         continue;
                     }
                     naujas_studentas.egzamino_rezultatas = naujas_studentas.nd_rezultatai.back();
@@ -157,21 +116,8 @@ int main() {
     sort(studentai.begin(), studentai.end(), [](const Studentas& s1, const Studentas& s2) { 
         return s1.vardas < s2.vardas; 
     });
-   
-    auto sIsvestis = std::chrono::system_clock::now();
-    isvesti(studentai, dRusiavimas);
-    auto eIsvestis = std::chrono::system_clock::now();
-    auto ePrograma = std::chrono::system_clock::now();
 
-    std::chrono::duration<double> dPrograma = ePrograma - sPrograma;
-    std::chrono::duration<double> dIsvestis = eIsvestis - sIsvestis;
+    spausdinti(studentai);
 
-    cout << endl << "-----------------------------------------------------------------------" << endl;
-
-    cout << "Studentu failo generavimas uztruko " << dGeneravimas.count() << "s." << endl;
-    cout << "Programos veikimas uztruko " << dPrograma.count() << "s." << endl;
-    cout << "Studentu rusiavimas uztruko " << dRusiavimas.count() << "s." << endl;
-    cout << "Isvestis i faila uztruko " << dIsvestis.count() << "s." << endl;
-    
     return 0;
 }
