@@ -7,6 +7,9 @@
 #include <fstream>
 #include <sstream>
 #include <random>
+#include <cstdlib>
+#include <ctime>
+#include <chrono>
 
 using std::invalid_argument;
 using std::istringstream;
@@ -18,6 +21,7 @@ using std::cout;
 using std::cin;
 using std::endl;
 using std::left;
+using std::right;
 using std::setw;
 using std::setprecision;
 using std::copy;
@@ -26,3 +30,4 @@ using std::srand;
 using std::accumulate;
 using std::sort;
 using std::getline;
+using std::to_string;

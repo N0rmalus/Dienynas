@@ -23,6 +23,18 @@ Vartotojas taip pat turi galimybę ne tik pridėti naujų mokinių rankiniu būd
 
 **header.h** - antraštinis failas, kuriame laikoma studento struktūra ir funkcijų antraštės.
 
+## v0.4
+Nuo šios versijos vartotojas gali pats generuoti failus įrašydamas norimą mokinių ir namų darbų rezultatų kiekį. Taip pat, skaičiuojamas programos ir jos pagrindinių funkcijų veikimo laikas.
+
+**main.cpp** - pagrindinė programos dalis.
+
+**alternative.cpp** - papildoma programos dalis, kurioje laikomi funkcijų aprašymai.
+
+**generator.cpp** - papildoma programos dalis, kurioje laikoma failo generavimo funkcija.
+
+**header.h** - antraštinis failas, kuriame laikoma studento struktūra ir funkcijų antraštės.
+
+
 ---
 
 **libraries.h** - failas, kuriame saugomos visos bibliotekos ir jų pagrindinės funkcijos, kurios yra reikalingos šiai programai veikti.
