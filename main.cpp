@@ -9,7 +9,7 @@ int main() {
     bool is_naujo = false, is_naujo2 = false;
 
     std::chrono::duration<double> dRusiavimas, dGeneravimas;
-    auto sPrograma = std::chrono::system_clock::now();
+    auto sPrograma = std::chrono::system_clock::now(), sSkaitymas = std::chrono::system_clock::now(), eSkaitymas = std::chrono::system_clock::now();
     do {
         cout << "-----------------------------------------------------------------------" << endl;
         cout << "Duomenis skaityti is failo? (Y/N): ";
@@ -65,6 +65,8 @@ int main() {
                 continue;
             } else {
                 sPrograma = std::chrono::system_clock::now();
+
+                sSkaitymas = std::chrono::system_clock::now();
                 // Praleisti pirmą eilutę
                 string headers;
                 getline(skaito, headers);
@@ -96,6 +98,8 @@ int main() {
                 cout << "-----------------------------------------------------------------------" << endl;
 
                 skaito.close();
+                eSkaitymas = std::chrono::system_clock::now();
+
                 break;
             }
         } else if (skaityti == 'N' || skaityti == 'n') {
@@ -163,15 +167,17 @@ int main() {
     auto eIsvestis = std::chrono::system_clock::now();
     auto ePrograma = std::chrono::system_clock::now();
 
-    std::chrono::duration<double> dPrograma = ePrograma - sPrograma;
+    std::chrono::duration<double> dSkaitymas = eSkaitymas - sSkaitymas;
     std::chrono::duration<double> dIsvestis = eIsvestis - sIsvestis;
+    std::chrono::duration<double> dPrograma = ePrograma - sPrograma;
 
     cout << endl << "-----------------------------------------------------------------------" << endl;
 
     cout << "Studentu failo generavimas uztruko " << dGeneravimas.count() << "s." << endl;
-    cout << "Programos veikimas uztruko " << dPrograma.count() << "s." << endl;
+    cout << "Studentu failo skaitymas uztruko " << dSkaitymas.count() << "s." << endl;
     cout << "Studentu rusiavimas uztruko " << dRusiavimas.count() << "s." << endl;
     cout << "Isvestis i faila uztruko " << dIsvestis.count() << "s." << endl;
+    cout << "Programos veikimas uztruko " << dPrograma.count() << "s." << endl;
     
     return 0;
 }
