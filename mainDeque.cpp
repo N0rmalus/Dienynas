@@ -2,7 +2,7 @@
 #include "header.h"
 
 int main() {
-    vector<Studentas> studentai;
+    deque<Studentas> studentai;
     string vardas, pavarde, failas;
     int kiek_nd;
     char pasirinkimas, pasirinkimas2, skaityti;
@@ -157,13 +157,13 @@ int main() {
         }
     } while(is_naujo);
 
-    galutinis(studentai);
+    galutinisDeque(studentai);
     sort(studentai.begin(), studentai.end(), [](const Studentas& s1, const Studentas& s2) { 
         return s1.vardas < s2.vardas; 
     });
    
     auto sIsvestis = std::chrono::system_clock::now();
-    isvesti(studentai, dRusiavimas);
+    isvestiDeque(studentai);
     auto eIsvestis = std::chrono::system_clock::now();
     auto ePrograma = std::chrono::system_clock::now();
 
