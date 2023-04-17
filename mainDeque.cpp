@@ -16,13 +16,13 @@ int main() {
         cin >> skaityti;
 
         if(skaityti == 'Y' || skaityti == 'y') {
-            char pasirinkti;
+            char generuoti;
 
             do {
                 cout << endl << "Sugeneruoti faila? (Y/N): ";
-                cin >> pasirinkti;
+                cin >> generuoti;
 
-                if(pasirinkti == 'Y' || pasirinkti == 'y') {
+                if(generuoti == 'Y' || generuoti == 'y') {
                     int kiek_studentu, kiek_nd2;
                     string failasGen;
 
@@ -44,10 +44,10 @@ int main() {
                     cout << "-----------------------------------------------------------------------" << endl;
 
                     break;
-                } else if(pasirinkti == 'N' || pasirinkti == 'n') {
+                } else if(generuoti == 'N' || generuoti == 'n') {
                     break;
                 } else {
-                    cout << endl << "Tokio pasirinkimo [" << pasirinkti << "] nera.";
+                    cout << endl << "Tokio pasirinkimo [" << generuoti << "] nera.";
 
                     continue;
                 }
