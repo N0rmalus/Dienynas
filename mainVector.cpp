@@ -1,185 +1,224 @@
 #include "libraries.h"
-#include "header.h"
+
+struct Studentas {
+    string vardas;
+    string pavarde;
+    vector<int> nd_rezultatai;
+    int egzamino_rezultatas;
+    double galutinis_vid, galutinis_med;
+};
+
+void galutinis(vector<Studentas>& studentai) {
+    for(int i = 0; i < studentai.size(); i++) {
+        double vidurkis = 0;
+        double mediana = 0;
+        if (studentai[i].nd_rezultatai.size() > 0) {
+            // Galutinio balo apskaičiavimas su rezultatų vidurkiu
+            vidurkis = accumulate(studentai[i].nd_rezultatai.begin(), studentai[i].nd_rezultatai.end(), 0.0) / studentai[i].nd_rezultatai.size();
+
+            // Galutinio balo apskaičiavimas su rezultatų mediana
+            int dydis = studentai[i].nd_rezultatai.size();
+            sort(studentai[i].nd_rezultatai.begin(), studentai[i].nd_rezultatai.end());
+
+            // Jei yra lyginis skaičius rezultatų, imamas dviejų vidurinių skaičių vidurkis, jei nelyginis, imamas vidurinis skaičius
+            if (dydis % 2 == 0) {
+                mediana = (double)(studentai[i].nd_rezultatai[dydis / 2 - 1] + studentai[i].nd_rezultatai[dydis / 2]) / 2;
+            } else {
+                mediana = studentai[i].nd_rezultatai[dydis / 2];
+            }
+        }
+        studentai[i].galutinis_med = 0.4 * mediana + 0.6 * studentai[i].egzamino_rezultatas;
+        studentai[i].galutinis_vid = 0.4 * vidurkis + 0.6 * studentai[i].egzamino_rezultatas;
+    }
+}
 
 int main() {
     vector<Studentas> studentai;
-    string vardas, pavarde, failas;
     int kiek_nd;
-    char pasirinkimas, pasirinkimas2, skaityti;
+    string vardas, pavarde;
+    char pasirinkimas, pasirinkimas2;
     bool is_naujo = false, is_naujo2 = false;
 
-    std::chrono::duration<double> dRusiavimas, dGeneravimas;
-    auto sPrograma = std::chrono::system_clock::now(), sSkaitymas = std::chrono::system_clock::now(), eSkaitymas = std::chrono::system_clock::now();
     do {
         cout << "-----------------------------------------------------------------------" << endl;
-        cout << "Duomenis skaityti is failo? (Y/N): ";
-        cin >> skaityti;
 
-        if(skaityti == 'Y' || skaityti == 'y') {
-            char generuoti;
+        cout << "Iveskite studento varda: ";
+        cin >> vardas;
+        cout << "Iveskite studento pavarde: ";
+        cin >> pavarde; cout << endl;
+
+        Studentas naujas_studentas;
+        naujas_studentas.vardas = vardas;
+        naujas_studentas.pavarde = pavarde;
+
+        int nd_rezultatas, egz_rez;
+        vector<int> nd_rezultatai;
+
+        cout << "Ar norite, kad mokinio gautieji balai uz namu darbus bei egzamina butu generuojami atsitiktinai? (Y/N): ";
+        cin >> pasirinkimas2;
+
+        if(pasirinkimas2 == 'Y' || pasirinkimas2 == 'y') {
+            cout << "-----------------------------------------------------------------------" << endl;
 
             do {
-                cout << endl << "Sugeneruoti faila? (Y/N): ";
-                cin >> generuoti;
-
-                if(generuoti == 'Y' || generuoti == 'y') {
-                    int kiek_studentu, kiek_nd2;
-                    string failasGen;
-
-                    cout << "Iveskite studentu kieki: ";
-                    cin >> kiek_studentu;
-
-                    cout << "Iveskite namu darbu rezultatu kieki: ";
-                    cin >> kiek_nd2;
-
-                    cout << "Iveskite sugeneruoto failo pavadinima: ";
-                    cin >> failasGen; cout << endl;
-
-                    cout << "Failas [" << failasGen << "] generuojamas... ";
-                    auto sGeneravimas = std::chrono::system_clock::now();
-                    generatorius(failasGen, kiek_studentu, kiek_nd2);
-                    auto eGeneravimas = std::chrono::system_clock::now();
-                    dGeneravimas = eGeneravimas - sGeneravimas;
-
-                    cout << "-----------------------------------------------------------------------" << endl;
-
-                    break;
-                } else if(generuoti == 'N' || generuoti == 'n') {
-                    break;
-                } else {
-                    cout << endl << "Tokio pasirinkimo [" << generuoti << "] nera.";
-
-                    continue;
+                try {
+                    cout << "Iveskite [" << naujas_studentas.vardas << " " << naujas_studentas.pavarde << "] namu darbu rezultatu kieki, kuris bus atsitiktinai sugeneruotas: ";
+                    cin >> kiek_nd; cout << endl;
+                    if(cin.fail()) {
+                        throw invalid_argument("Klaida: ivestas neteisingas simbolis.");
+                    } else {
+                        break;
+                    }
+                } catch(const invalid_argument& e) {
+                    cout << e.what() << endl;
+                    cin.clear(); 
+                    cin.ignore();
                 }
             } while(true);
 
-            cout << "Failu sarasas: "; system("ls *.txt");
-            cout << "Pasirinkite faila: ";
-            cin >> failas;
+            // Generuojami atsitiktiniai namų darbų bei egzamino rezultatai
+            mt19937 mt(1729);
+            uniform_int_distribution<int> dist(1, 10);
+            for(int i = 0; i < kiek_nd; i++) {
+                nd_rezultatas = dist(mt);
+                egz_rez = dist(mt);
 
-            ifstream skaito(failas);
-            if(!skaito.is_open()) {
-                cout << "Klaida: tokio failo [" << failas << "] nera." << endl;
-                
-                is_naujo = true;
-                continue;
-            } else {
-                sPrograma = std::chrono::system_clock::now();
+                cout << "Atsitiktinis [" << naujas_studentas.vardas << " " << naujas_studentas.pavarde << "] namu darbu rezultatas: " << nd_rezultatas << endl;
 
-                sSkaitymas = std::chrono::system_clock::now();
-                // Praleisti pirmą eilutę
-                string headers;
-                getline(skaito, headers);
-
-                while (skaito >> vardas >> pavarde) {
-                    Studentas naujas_studentas;
-                    naujas_studentas.vardas = vardas;
-                    naujas_studentas.pavarde = pavarde;
-
-                    int nd_rezultatas;
-
-                    while (skaito >> nd_rezultatas) {
-                        if (nd_rezultatas < 1 || nd_rezultatas > 10) {continue;}
-                        naujas_studentas.nd_rezultatai.push_back(nd_rezultatas);
-                        if (skaito.peek() == '\n') {break;}
-                    }
-
-                    if (naujas_studentas.nd_rezultatai.empty()) {
-                        cout << "Nerasta rezultatu [" << naujas_studentas.vardas << " " << naujas_studentas.pavarde << "]" << endl;
-                        
-                        continue;
-                    }
-                    naujas_studentas.egzamino_rezultatas = naujas_studentas.nd_rezultatai.back();
-                    naujas_studentas.nd_rezultatai.pop_back();
-
-                    studentai.push_back(naujas_studentas);
-                }
-
-                cout << "-----------------------------------------------------------------------" << endl;
-
-                skaito.close();
-                eSkaitymas = std::chrono::system_clock::now();
-
-                break;
+                // Atsitiktiniai rezultatai pridedami į vektoriaus pabaigą
+                nd_rezultatai.push_back(nd_rezultatas);
             }
-        } else if (skaityti == 'N' || skaityti == 'n') {
+
+            naujas_studentas.nd_rezultatai = nd_rezultatai;
+            naujas_studentas.egzamino_rezultatas = egz_rez;
+            
+            cout << endl << "Atsitiktinis [" << naujas_studentas.vardas << " " << naujas_studentas.pavarde << "] egzamino rezultatas: " << egz_rez << endl;
+        } else if (pasirinkimas2 == 'N' || pasirinkimas2 == 'n') {
+            cout << "-----------------------------------------------------------------------" << endl;
+
             do {
-                cout << "-----------------------------------------------------------------------" << endl;
+                try {
+                    cout << "Iveskite [" << naujas_studentas.vardas << " " << naujas_studentas.pavarde << "] namu darbo rezultata intervale [1; 10] (arba 0, jei daugiau nenorite vesti): ";
+                    cin >> nd_rezultatas;
 
-                cout << "Iveskite studento varda: ";
-                cin >> vardas;
-                cout << "Iveskite studento pavarde: ";
-                cin >> pavarde; cout << endl;
+                    if(cin.fail()) {
+                        throw invalid_argument("Klaida: ivestas neteisingas simbolis.");
+                    } if(nd_rezultatas != 0 && nd_rezultatas > 0 && nd_rezultatas <= 10) {
+                        // Įvestas rezultatas pridedamas į vektoriaus pabaigą
+                        nd_rezultatai.push_back(nd_rezultatas);
+                    } else if(nd_rezultatas < 0 || nd_rezultatas > 10) {
+                        cout << "Klaida: pazymys turi buti intervale [1; 10]." << endl;
 
-                Studentas naujas_studentas;
-                naujas_studentas.vardas = vardas;
-                naujas_studentas.pavarde = pavarde;
+                        continue;
+                    } else if(nd_rezultatas == 0) {break;}  
+                } catch(const invalid_argument& e) {
+                    cout << e.what() << endl;
+                    cin.clear(); 
+                    cin.ignore();
 
-                int nd_rezultatas, egz_rez;
+                    is_naujo2 = true;
+                }
+            } while (nd_rezultatas != 0 || is_naujo2 != false);
 
-                cout << "Generuoti mokinio rezultatus atsitiktinai? (Y/N): ";
-                cin >> pasirinkimas2;
+            naujas_studentas.nd_rezultatai = nd_rezultatai;
 
-                if(pasirinkimas2 == 'Y' || pasirinkimas2 == 'y') {
-                    atsitiktiniai_rez(nd_rezultatas, egz_rez, kiek_nd, naujas_studentas);
-                } else if (pasirinkimas2 == 'N' || pasirinkimas2 == 'n') {
-                    rasomi_rez(is_naujo2, nd_rezultatas, egz_rez, naujas_studentas);
-                } else {
-                    cout << "Tokio pasirinkimo [" << pasirinkimas2 << "] nera." << endl;
+            do {
+                try {
+                    cout << endl << "Iveskite [" << naujas_studentas.vardas << " " << naujas_studentas.pavarde << "] egzamino rezultata intervale [1; 10]: ";
+                    cin >> egz_rez;
+                    
+                    if(cin.fail()) {
+                        throw invalid_argument("Klaida: ivestas neteisingas simbolis.");
+                    }
+                } catch(const invalid_argument& e) {
+                    cout << e.what() << endl;
+                    cin.clear(); 
+                    cin.ignore();
+                } if(egz_rez > 0 && egz_rez <= 10) {
+                    naujas_studentas.egzamino_rezultatas = egz_rez;
 
-                    is_naujo = true;
+                    break;
+                } else if(egz_rez < 1 && egz_rez > 10) {
+                    cout << "Klaida: rezultatas turi buti intervale [1; 10]." << endl;
+
                     continue;
                 }
-
-                if(naujas_studentas.nd_rezultatai.size() < 1) {
-                    cout << "Klaida: truksta rezultatu. [" << naujas_studentas.vardas << " " << naujas_studentas.pavarde << "] bus neirasytas." << endl;
-                }
-
-                cout << "-----------------------------------------------------------------------" << endl;
-
-                studentai.push_back(naujas_studentas);
-
-                do {
-                    cout << "Ar norite ivesti nauja studenta? (Y/N): ";
-                    cin >> pasirinkimas;
-
-                    if(pasirinkimas != 'N' && pasirinkimas != 'n' && pasirinkimas != 'Y' && pasirinkimas != 'y') {
-                        cout << "Tokio pasirinkimo [" << pasirinkimas << "] nera." << endl;
-                    } else {break;}
-                } while(true);
-
-                is_naujo = false;
-            } while(is_naujo || pasirinkimas == 'Y' || pasirinkimas == 'y');
+            } while(true);  
         } else {
-            cout << "Tokio pasirinkimo [" << skaityti << "] nera." << endl;
+            cout << "Tokio pasirinkimo [" << pasirinkimas2 << "] nera." << endl;
 
             is_naujo = true;
+            continue;
         }
-    } while(is_naujo);
+
+        if(nd_rezultatai.size() < 1) {
+            cout << "Klaida: truksta rezultatu. [" << naujas_studentas.vardas << " " << naujas_studentas.pavarde << "] bus neirasytas." << endl;
+        }
+
+        cout << "-----------------------------------------------------------------------" << endl;
+
+        studentai.push_back(naujas_studentas);
+
+        do {
+            cout << "Ar norite ivesti nauja studenta? (Y/N): ";
+            cin >> pasirinkimas;
+
+            if(pasirinkimas != 'N' && pasirinkimas != 'n' && pasirinkimas != 'Y' && pasirinkimas != 'y') {
+                cout << "Tokio pasirinkimo [" << pasirinkimas << "] nera." << endl;
+            } else {break;}
+        } while(true);
+
+        is_naujo = false;
+    } while(is_naujo || pasirinkimas == 'Y' || pasirinkimas == 'y');
 
     galutinis(studentai);
-    sort(studentai.begin(), studentai.end(), [](const Studentas& s1, const Studentas& s2) { 
-        return s1.vardas < s2.vardas; 
-    });
-   
-    auto sIsvestis = std::chrono::system_clock::now();
 
-    
-    isvesti(studentai);
-    auto eIsvestis = std::chrono::system_clock::now();
-    auto ePrograma = std::chrono::system_clock::now();
+    do {
+        try {
+            cout << endl << "Ar norite, kad galutini bala apskaiciuotu su mediana? (Y/N): ";
+            cin >> pasirinkimas;
 
-    std::chrono::duration<double> dSkaitymas = eSkaitymas - sSkaitymas;
-    std::chrono::duration<double> dIsvestis = eIsvestis - sIsvestis;
-    std::chrono::duration<double> dPrograma = ePrograma - sPrograma;
+            if(cin.fail()) {
+                throw invalid_argument("Klaida: ivestas neteisingas simbolis.");
+            }
+        } catch(const invalid_argument& e) {
+            cout << e.what() << endl;
+            cin.clear(); 
+            cin.ignore();
+        }
 
-    cout << endl << "-----------------------------------------------------------------------" << endl;
+        cout << "-----------------------------------------------------------------------" << endl << endl;
 
-    cout << "Studentu failo generavimas uztruko " << dGeneravimas.count() << "s." << endl;
-    cout << "Studentu failo skaitymas uztruko " << dSkaitymas.count() << "s." << endl;
-    cout << "Studentu rusiavimas uztruko " << dRusiavimas.count() << "s." << endl;
-    cout << "Isvestis i faila uztruko " << dIsvestis.count() << "s." << endl;
-    cout << "Programos veikimas uztruko " << dPrograma.count() << "s." << endl;
-    
+        if(pasirinkimas == 'Y' || pasirinkimas == 'y') {
+            // Mokinių duomenų išrašymas su medianos galutiniu balu
+            cout << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(5) << left << "Galutinis (Med.)" << endl;
+            cout << "---------------------------------------------------" << endl;
+            for (int i = 0; i < studentai.size(); i++) {
+                if(studentai[i].nd_rezultatai.empty()) {continue;}
+                cout << setw(15) << left << studentai[i].pavarde << setw(15) << left << studentai[i].vardas << setw(5) << left << fixed << setprecision(2) << studentai[i].galutinis_med << endl;
+            }    
+            cout << endl << "-----------------------------------------------------------------------" << endl;
+
+            break;
+        } if(pasirinkimas == 'N' || pasirinkimas == 'n') {
+            // Mokinių duomenų išrašymas su vidurkio galutiniu balu
+            cout << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(5) << left << "Galutinis (Vid.)" << endl;
+            cout << "---------------------------------------------------" << endl;
+            for (int i = 0; i < studentai.size(); i++) {
+                if(studentai[i].nd_rezultatai.empty()) {continue;}
+                cout << setw(15) << left << studentai[i].pavarde << setw(15) << left << studentai[i].vardas << setw(5) << left << fixed << setprecision(2) << studentai[i].galutinis_vid << endl;
+            }
+            cout << endl << "-----------------------------------------------------------------------" << endl;
+
+            break;
+        } else {
+            cout << "Tokio pasirinkimo [" << pasirinkimas << "] nera." << endl;
+            cout << endl << "Ar norite, kad galutini bala apskaiciuotu su mediana? (Y/N): ";
+            cin >> pasirinkimas; cout << endl;
+            
+            continue;
+        }
+    } while(true);
+
     return 0;
 }
