@@ -2,7 +2,7 @@
 #include "header.h"
 
 int main() {
-    vector<Studentas> studentai;
+    deque<Studentas> studentai;
     string vardas, pavarde, failas;
     int kiek_nd;
     char pasirinkimas, pasirinkimas2, skaityti;
@@ -65,6 +65,7 @@ int main() {
                 continue;
             } else {
                 sPrograma = std::chrono::system_clock::now();
+
                 // Praleisti pirmą eilutę
                 string headers;
                 getline(skaito, headers);
@@ -99,6 +100,8 @@ int main() {
                 cout << "-----------------------------------------------------------------------" << endl;
 
                 skaito.close();
+                eSkaitymas = std::chrono::system_clock::now();
+
                 break;
             }
         } else if (skaityti == 'N' || skaityti == 'n') {
@@ -156,15 +159,15 @@ int main() {
         }
     } while(is_naujo);
 
-    galutinis(studentai);
+    galutinisDeque(studentai);
     sort(studentai.begin(), studentai.end(), [](const Studentas& s1, const Studentas& s2) { 
         return s1.vardas < s2.vardas; 
     });
    
-    isvesti(studentai);
+    isvestiDeque(studentai);
     auto ePrograma = std::chrono::system_clock::now();
     std::chrono::duration<double> dPrograma = ePrograma - sPrograma;
-    
+
     cout << endl << "-----------------------------------------------------------------------" << endl;
 
     cout << "Studentu failo generavimas uztruko " << dGeneravimas.count() << "s." << endl;

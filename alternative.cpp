@@ -1,6 +1,6 @@
 #include "header.h"
 
-void galutinis(vector<Studentas>& studentai) {
+void galutinis(studentaiVector& studentai) {
     for(int i = 0; i < studentai.size(); i++) {
         double vidurkis = 0;
         double mediana = 0;
@@ -107,12 +107,146 @@ void rasomi_rez(bool is_naujo2, int nd_rezultatas, int egz_rez, Studentas& nauja
         }
     } while(true);  
 }
-void isvesti(vector<Studentas>& studentai) {
+
+// auto sRusiavimas = std::chrono::system_clock::now(), eRusiavimas = std::chrono::system_clock::now();
+void isvesti(studentaiVector& studentai) {
     ofstream rasoL("luzeriai.txt");
     ofstream rasoW("neluzeriai.txt");
-    
+
     vector<Studentas> luzeriai;
     vector<Studentas> neluzeriai;
+
+    rasoL << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
+    rasoW << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
+    rasoL << "--------------------------------------------------------------------" << endl;
+    rasoW << "--------------------------------------------------------------------" << endl;
+
+    // Mokinių rūšiavimas pagal galutinius pažymius
+    auto sRusiavimas = std::chrono::system_clock::now();
+    for(const auto& s : studentai) {
+        if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0) {luzeriai.push_back(s);}
+        if(s.galutinis_vid >= 5.0 && s.galutinis_med >= 5.0) {neluzeriai.push_back(s);}
+    }   
+    auto eRusiavimas = std::chrono::system_clock::now();
+    std::chrono::duration<double> dRusiavimas = eRusiavimas - sRusiavimas;
+
+    cout << "Rusiavimas baigtas per " << dRusiavimas.count() << "s." << endl;
+
+    // Surūšiuotų mokinių duomenų išrašymas į skirtingus failus
+    auto sIsvestis = std::chrono::system_clock::now();
+    for(const auto& l : luzeriai) {
+        if(l.nd_rezultatai.empty() || l.galutinis_vid <= 0 || l.galutinis_med <= 0) {continue;}
+        rasoL << setw(15) << left << l.pavarde << setw(15) << left << l.vardas << setw(20) << left << fixed << setprecision(2) << l.galutinis_vid << fixed << setprecision(2) << l.galutinis_med << endl;
+    } for(const auto& w : neluzeriai) {
+        if(w.nd_rezultatai.empty() || w.galutinis_vid <= 0 || w.galutinis_med <= 0) {continue;}
+        rasoW << setw(15) << left << w.pavarde << setw(15) << left << w.vardas << setw(20) << left << fixed << setprecision(2) << w.galutinis_vid << fixed << setprecision(2) << w.galutinis_med << endl;
+    }
+    auto eIsvestis = std::chrono::system_clock::now();
+    std::chrono::duration<double> dIsvestis = eIsvestis - sIsvestis;
+
+    cout << "Israsymas baigas per " << dIsvestis.count() << "s. Rezultatas luzeriai.txt / neluzeriai.txt failuose.";
+
+    rasoL.close();
+    rasoW.close();
+}
+
+// List
+void galutinisList(list<Studentas>& studentai) {
+    for(auto it = studentai.begin(); it != studentai.end(); ++it) {
+        double vidurkis = 0;
+        double mediana = 0;
+        if(it->nd_rezultatai.size() > 0) {
+            // Galutinio balo apskaičiavimas su rezultatų vidurkiu
+            vidurkis = accumulate(it->nd_rezultatai.begin(), it->nd_rezultatai.end(), 0.0) / it->nd_rezultatai.size();
+
+            // Galutinio balo apskaičiavimas su rezultatų mediana
+            int dydis = it->nd_rezultatai.size();
+            vector<int> nd_copy(it->nd_rezultatai.begin(), it->nd_rezultatai.end());
+            sort(nd_copy.begin(), nd_copy.end());
+
+            // Jei yra lyginis skaičius rezultatų, imamas dviejų vidurinių skaičių vidurkis, jei nelyginis, imamas vidurinis skaičius
+            if(dydis % 2 == 0) {
+                mediana = (double)(nd_copy[dydis / 2 - 1] + nd_copy[dydis / 2]) / 2;
+            } else {
+                mediana = nd_copy[dydis / 2];
+            }
+        }
+        it->galutinis_med = 0.4 * mediana + 0.6 * it->egzamino_rezultatas;
+        it->galutinis_vid = 0.4 * vidurkis + 0.6 * it->egzamino_rezultatas;
+    }
+}
+void isvestiList(list<Studentas>& studentai) {
+    ofstream rasoL("luzeriai.txt");
+    ofstream rasoW("neluzeriai.txt");
+
+    list<Studentas> luzeriai;
+    list<Studentas> neluzeriai;
+
+    rasoL << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
+    rasoW << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
+    rasoL << "--------------------------------------------------------------------" << endl;
+    rasoW << "--------------------------------------------------------------------" << endl;
+
+    // Mokinių rūšiavimas pagal galutinius pažymius
+    auto sRusiavimas = std::chrono::system_clock::now();
+    for(const auto& s : studentai) {
+        if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0) {luzeriai.push_back(s);}
+        if(s.galutinis_vid >= 5.0 && s.galutinis_med >= 5.0) {neluzeriai.push_back(s);}
+    }   
+    auto eRusiavimas = std::chrono::system_clock::now();
+    std::chrono::duration<double> dRusiavimas = eRusiavimas - sRusiavimas;
+
+    cout << "Rusiavimas baigtas per " << dRusiavimas.count() << "s." << endl;
+
+    // Surūšiuotų mokinių duomenų išrašymas į skirtingus failus
+    auto sIsvestis = std::chrono::system_clock::now();
+    for(const auto& l : luzeriai) {
+        if(l.nd_rezultatai.empty() || l.galutinis_vid <= 0 || l.galutinis_med <= 0) {continue;}
+        rasoL << setw(15) << left << l.pavarde << setw(15) << left << l.vardas << setw(20) << left << fixed << setprecision(2) << l.galutinis_vid << fixed << setprecision(2) << l.galutinis_med << endl;
+    } for(const auto& w : neluzeriai) {
+        if(w.nd_rezultatai.empty() || w.galutinis_vid <= 0 || w.galutinis_med <= 0) {continue;}
+        rasoW << setw(15) << left << w.pavarde << setw(15) << left << w.vardas << setw(20) << left << fixed << setprecision(2) << w.galutinis_vid << fixed << setprecision(2) << w.galutinis_med << endl;
+    }
+    auto eIsvestis = std::chrono::system_clock::now();
+    std::chrono::duration<double> dIsvestis = eIsvestis - sIsvestis;
+
+    cout << "Israsymas baigas per " << dIsvestis.count() << "s. Rezultatas luzeriai.txt / neluzeriai.txt failuose.";
+
+    rasoL.close();
+    rasoW.close();
+}
+
+// Deque
+void galutinisDeque(deque<Studentas>& studentai) {
+    for(auto it = studentai.begin(); it != studentai.end(); ++it) {
+        double vidurkis = 0;
+        double mediana = 0;
+        if(it->nd_rezultatai.size() > 0) {
+            // Galutinio balo apskaičiavimas su rezultatų vidurkiu
+            vidurkis = accumulate(it->nd_rezultatai.begin(), it->nd_rezultatai.end(), 0.0) / it->nd_rezultatai.size();
+
+            // Galutinio balo apskaičiavimas su rezultatų mediana
+            int dydis = it->nd_rezultatai.size();
+            vector<int> nd_copy(it->nd_rezultatai.begin(), it->nd_rezultatai.end());
+            sort(nd_copy.begin(), nd_copy.end());
+
+            // Jei yra lyginis skaičius rezultatų, imamas dviejų vidurinių skaičių vidurkis, jei nelyginis, imamas vidurinis skaičius
+            if(dydis % 2 == 0) {
+                mediana = (double)(nd_copy[dydis / 2 - 1] + nd_copy[dydis / 2]) / 2;
+            } else {
+                mediana = nd_copy[dydis / 2];
+            }
+        }
+        it->galutinis_med = 0.4 * mediana + 0.6 * it->egzamino_rezultatas;
+        it->galutinis_vid = 0.4 * vidurkis + 0.6 * it->egzamino_rezultatas;
+    }
+}
+void isvestiDeque(deque<Studentas>& studentai) {
+    ofstream rasoL("luzeriai.txt");
+    ofstream rasoW("neluzeriai.txt");
+
+    deque<Studentas> luzeriai;
+    deque<Studentas> neluzeriai;
 
     rasoL << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
     rasoW << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
