@@ -110,44 +110,70 @@ void rasomi_rez(bool is_naujo2, int nd_rezultatas, int egz_rez, Studentas& nauja
 
 // auto sRusiavimas = std::chrono::system_clock::now(), eRusiavimas = std::chrono::system_clock::now();
 void isvesti(studentaiVector& studentai) {
-    ofstream rasoL("luzeriai.txt");
-    ofstream rasoW("neluzeriai.txt");
+    vector<Studentas> win;
+    vector<Studentas> loss;
 
-    vector<Studentas> luzeriai;
-    vector<Studentas> neluzeriai;
+    int strategija;
 
-    rasoL << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
-    rasoW << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
-    rasoL << "--------------------------------------------------------------------" << endl;
-    rasoW << "--------------------------------------------------------------------" << endl;
+    cout << "Kokia rusiavimo strategija norite naudoti? (1 / 2): ";
+    cin >> strategija; cout << endl;
 
-    // Mokinių rūšiavimas pagal galutinius pažymius
-    auto sRusiavimas = std::chrono::system_clock::now();
-    for(const auto& s : studentai) {
-        if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0) {luzeriai.push_back(s);}
-        if(s.galutinis_vid >= 5.0 && s.galutinis_med >= 5.0) {neluzeriai.push_back(s);}
-    }   
-    auto eRusiavimas = std::chrono::system_clock::now();
-    std::chrono::duration<double> dRusiavimas = eRusiavimas - sRusiavimas;
+    // Mokinių duomenų išrašymas
+    switch(strategija) {
+        case 1: {
+            auto sRusiavimas = std::chrono::system_clock::now();
+            for (const auto& s : studentai) {
+                if(s.nd_rezultatai.empty() || s.galutinis_vid <= 0 || s.galutinis_med <= 0) {continue;}
 
-    cout << "Rusiavimas baigtas per " << dRusiavimas.count() << "s." << endl;
+                if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0) {
 
-    // Surūšiuotų mokinių duomenų išrašymas į skirtingus failus
-    auto sIsvestis = std::chrono::system_clock::now();
-    for(const auto& l : luzeriai) {
-        if(l.nd_rezultatai.empty() || l.galutinis_vid <= 0 || l.galutinis_med <= 0) {continue;}
-        rasoL << setw(15) << left << l.pavarde << setw(15) << left << l.vardas << setw(20) << left << fixed << setprecision(2) << l.galutinis_vid << fixed << setprecision(2) << l.galutinis_med << endl;
-    } for(const auto& w : neluzeriai) {
-        if(w.nd_rezultatai.empty() || w.galutinis_vid <= 0 || w.galutinis_med <= 0) {continue;}
-        rasoW << setw(15) << left << w.pavarde << setw(15) << left << w.vardas << setw(20) << left << fixed << setprecision(2) << w.galutinis_vid << fixed << setprecision(2) << w.galutinis_med << endl;
+                    loss.push_back(s);
+                } else {win.push_back(s);}
+            }    
+            auto eRusiavimas = std::chrono::system_clock::now();
+            std::chrono::duration<double> dRusiavimas = eRusiavimas - sRusiavimas;
+
+            cout << "Rusiavimas baigtas per " << dRusiavimas.count() << "s.";
+
+            break; 
+        }
+        case 2: {
+            auto sRusiavimas = std::chrono::system_clock::now();
+            for (const auto& s : studentai) {
+                if(s.nd_rezultatai.empty()) continue;
+                if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0)
+                    loss.push_back(s);
+            }
+
+            studentai.erase(remove_if(studentai.begin(), studentai.end(), [](const auto& s){
+                return s.nd_rezultatai.empty() || s.galutinis_vid <= 0 || s.galutinis_med <= 0 ||
+                    (s.galutinis_vid < 5.0 && s.galutinis_med < 5.0);
+            }), studentai.end());
+            auto eRusiavimas = std::chrono::system_clock::now();
+            std::chrono::duration<double> dRusiavimas = eRusiavimas - sRusiavimas;
+
+            cout << "Rusiavimas baigtas per " << dRusiavimas.count() << "s.";
+
+            break;
+        }
+        default: {
+            cout << "Tokio pasirinkimo [" << strategija << "] nera. Tesiama su pirma strategija" << endl;
+
+            auto sRusiavimas = std::chrono::system_clock::now();
+            for (const auto& s : studentai) {
+                if(s.nd_rezultatai.empty() || s.galutinis_vid <= 0 || s.galutinis_med <= 0) {continue;}
+                if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0)
+                    loss.push_back(s);
+                else {win.push_back(s);}
+            }    
+            auto eRusiavimas = std::chrono::system_clock::now();
+            std::chrono::duration<double> dRusiavimas = eRusiavimas - sRusiavimas;
+
+            cout << "Rusiavimas baigtas per " << dRusiavimas.count() << "s.";
+
+            break;
+        }
     }
-    auto eIsvestis = std::chrono::system_clock::now();
-    std::chrono::duration<double> dIsvestis = eIsvestis - sIsvestis;
-
-    cout << "Israsymas baigas per " << dIsvestis.count() << "s. Rezultatas luzeriai.txt / neluzeriai.txt failuose.";
-
-    rasoL.close();
-    rasoW.close();
 }
 
 // List
@@ -167,53 +193,78 @@ void galutinisList(list<Studentas>& studentai) {
             // Jei yra lyginis skaičius rezultatų, imamas dviejų vidurinių skaičių vidurkis, jei nelyginis, imamas vidurinis skaičius
             if(dydis % 2 == 0) {
                 mediana = (double)(nd_copy[dydis / 2 - 1] + nd_copy[dydis / 2]) / 2;
-            } else {
+            } else
                 mediana = nd_copy[dydis / 2];
-            }
         }
         it->galutinis_med = 0.4 * mediana + 0.6 * it->egzamino_rezultatas;
         it->galutinis_vid = 0.4 * vidurkis + 0.6 * it->egzamino_rezultatas;
     }
 }
 void isvestiList(list<Studentas>& studentai) {
-    ofstream rasoL("luzeriai.txt");
-    ofstream rasoW("neluzeriai.txt");
+    list<Studentas> win;
+    list<Studentas> loss;
 
-    list<Studentas> luzeriai;
-    list<Studentas> neluzeriai;
+    int strategija;
 
-    rasoL << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
-    rasoW << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
-    rasoL << "--------------------------------------------------------------------" << endl;
-    rasoW << "--------------------------------------------------------------------" << endl;
+    cout << "Kokia rusiavimo strategija norite naudoti? (1 / 2): ";
+    cin >> strategija; cout << endl;
 
-    // Mokinių rūšiavimas pagal galutinius pažymius
-    auto sRusiavimas = std::chrono::system_clock::now();
-    for(const auto& s : studentai) {
-        if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0) {luzeriai.push_back(s);}
-        if(s.galutinis_vid >= 5.0 && s.galutinis_med >= 5.0) {neluzeriai.push_back(s);}
-    }   
-    auto eRusiavimas = std::chrono::system_clock::now();
-    std::chrono::duration<double> dRusiavimas = eRusiavimas - sRusiavimas;
+    // Mokinių duomenų išrašymas
+    switch(strategija) {
+        case 1: {
+            auto sRusiavimas = std::chrono::system_clock::now();
+            for (const auto& s : studentai) {
+                if(s.nd_rezultatai.empty() || s.galutinis_vid <= 0 || s.galutinis_med <= 0) {continue;}
+                if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0)
+                    loss.push_back(s);
+                if(s.galutinis_vid >= 5.0 && s.galutinis_med >= 5.0)
+                    win.push_back(s);
+            }  
+            auto eRusiavimas = std::chrono::system_clock::now();
+            std::chrono::duration<double> dRusiavimas = eRusiavimas - sRusiavimas;
 
-    cout << "Rusiavimas baigtas per " << dRusiavimas.count() << "s." << endl;
+            cout << "Rusiavimas baigtas per " << dRusiavimas.count() << "s.";
 
-    // Surūšiuotų mokinių duomenų išrašymas į skirtingus failus
-    auto sIsvestis = std::chrono::system_clock::now();
-    for(const auto& l : luzeriai) {
-        if(l.nd_rezultatai.empty() || l.galutinis_vid <= 0 || l.galutinis_med <= 0) {continue;}
-        rasoL << setw(15) << left << l.pavarde << setw(15) << left << l.vardas << setw(20) << left << fixed << setprecision(2) << l.galutinis_vid << fixed << setprecision(2) << l.galutinis_med << endl;
-    } for(const auto& w : neluzeriai) {
-        if(w.nd_rezultatai.empty() || w.galutinis_vid <= 0 || w.galutinis_med <= 0) {continue;}
-        rasoW << setw(15) << left << w.pavarde << setw(15) << left << w.vardas << setw(20) << left << fixed << setprecision(2) << w.galutinis_vid << fixed << setprecision(2) << w.galutinis_med << endl;
+            break; 
+        }
+        case 2: {
+            auto sRusiavimas = std::chrono::system_clock::now();
+            for (auto it = studentai.begin(); it != studentai.end();) {
+                auto& s = *it;
+                if (s.nd_rezultatai.empty() || s.galutinis_vid <= 0 || s.galutinis_med <= 0) {
+                    ++it;
+                    continue;
+                } if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0) {
+                    loss.push_back(std::move(s));
+                    it = studentai.erase(it);
+                } else {++it;}
+            } 
+            auto eRusiavimas = std::chrono::system_clock::now();
+            std::chrono::duration<double> dRusiavimas = eRusiavimas - sRusiavimas;
+
+            cout << "Rusiavimas baigtas per " << dRusiavimas.count() << "s.";
+
+            break;
+        }
+        default: {
+            cout << "Tokio pasirinkimo [" << strategija << "] nera. Tesiama su pirma strategija" << endl;
+
+            auto sRusiavimas = std::chrono::system_clock::now();
+            for (const auto& s : studentai) {
+                if(s.nd_rezultatai.empty() || s.galutinis_vid <= 0 || s.galutinis_med <= 0) {continue;}
+                if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0)
+                    loss.push_back(s);
+                if(s.galutinis_vid >= 5.0 && s.galutinis_med >= 5.0)
+                    win.push_back(s);
+            }    
+            auto eRusiavimas = std::chrono::system_clock::now();
+            std::chrono::duration<double> dRusiavimas = eRusiavimas - sRusiavimas;
+
+            cout << "Rusiavimas baigtas per " << dRusiavimas.count() << "s.";
+
+            break;
+        }
     }
-    auto eIsvestis = std::chrono::system_clock::now();
-    std::chrono::duration<double> dIsvestis = eIsvestis - sIsvestis;
-
-    cout << "Israsymas baigas per " << dIsvestis.count() << "s. Rezultatas luzeriai.txt / neluzeriai.txt failuose.";
-
-    rasoL.close();
-    rasoW.close();
 }
 
 // Deque
@@ -242,42 +293,69 @@ void galutinisDeque(deque<Studentas>& studentai) {
     }
 }
 void isvestiDeque(deque<Studentas>& studentai) {
-    ofstream rasoL("luzeriai.txt");
-    ofstream rasoW("neluzeriai.txt");
+    deque<Studentas> win;
+    deque<Studentas> loss;
 
-    deque<Studentas> luzeriai;
-    deque<Studentas> neluzeriai;
+    int strategija;
 
-    rasoL << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
-    rasoW << setw(15) << left << "Pavarde" << setw(15) << left << "Vardas" << setw(20) << left << "Galutinis (Vid.)" << "Galutinis (Med.)" << endl;
-    rasoL << "--------------------------------------------------------------------" << endl;
-    rasoW << "--------------------------------------------------------------------" << endl;
+    cout << "Kokia rusiavimo strategija norite naudoti? (1 / 2): ";
+    cin >> strategija; cout << endl;
 
-    // Mokinių rūšiavimas pagal galutinius pažymius
-    auto sRusiavimas = std::chrono::system_clock::now();
-    for(const auto& s : studentai) {
-        if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0) {luzeriai.push_back(s);}
-        if(s.galutinis_vid >= 5.0 && s.galutinis_med >= 5.0) {neluzeriai.push_back(s);}
-    }   
-    auto eRusiavimas = std::chrono::system_clock::now();
-    std::chrono::duration<double> dRusiavimas = eRusiavimas - sRusiavimas;
+    // Mokinių duomenų išrašymas
+    switch(strategija) {
+        case 1: {
+            auto sRusiavimas = std::chrono::system_clock::now();
+            for (const auto& s : studentai) {
+                if(s.nd_rezultatai.empty() || s.galutinis_vid <= 0 || s.galutinis_med <= 0) {continue;}
+                if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0)
+                    loss.push_back(s);
+                if(s.galutinis_vid >= 5.0 && s.galutinis_med >= 5.0)
+                    win.push_back(s);    
+            }
+            auto eRusiavimas = std::chrono::system_clock::now();
+            std::chrono::duration<double> dRusiavimas = eRusiavimas - sRusiavimas;
 
-    cout << "Rusiavimas baigtas per " << dRusiavimas.count() << "s." << endl;
+            cout << "Rusiavimas baigtas per " << dRusiavimas.count() << "s.";
 
-    // Surūšiuotų mokinių duomenų išrašymas į skirtingus failus
-    auto sIsvestis = std::chrono::system_clock::now();
-    for(const auto& l : luzeriai) {
-        if(l.nd_rezultatai.empty() || l.galutinis_vid <= 0 || l.galutinis_med <= 0) {continue;}
-        rasoL << setw(15) << left << l.pavarde << setw(15) << left << l.vardas << setw(20) << left << fixed << setprecision(2) << l.galutinis_vid << fixed << setprecision(2) << l.galutinis_med << endl;
-    } for(const auto& w : neluzeriai) {
-        if(w.nd_rezultatai.empty() || w.galutinis_vid <= 0 || w.galutinis_med <= 0) {continue;}
-        rasoW << setw(15) << left << w.pavarde << setw(15) << left << w.vardas << setw(20) << left << fixed << setprecision(2) << w.galutinis_vid << fixed << setprecision(2) << w.galutinis_med << endl;
+            break;
+        }
+        case 2: {
+            auto sRusiavimas = std::chrono::system_clock::now();
+            for (auto it = studentai.begin(); it != studentai.end();) {
+                auto& s = *it;
+                if(s.nd_rezultatai.empty() || s.galutinis_vid <= 0 || s.galutinis_med <= 0) {
+                    ++it;
+                    continue;
+                }
+                if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0) {
+                    loss.push_back(std::move(s));
+                    it = studentai.erase(it);
+                } else {++it;}
+            } 
+            auto eRusiavimas = std::chrono::system_clock::now();
+            std::chrono::duration<double> dRusiavimas = eRusiavimas - sRusiavimas;
+
+            cout << "Rusiavimas baigtas per " << dRusiavimas.count() << "s.";
+
+            break;
+        }
+        default: {
+            cout << "Tokio pasirinkimo [" << strategija << "] nera. Tesiama su pirma strategija" << endl;
+
+            auto sRusiavimas = std::chrono::system_clock::now();
+            for (const auto& s : studentai) {
+                if(s.nd_rezultatai.empty() || s.galutinis_vid <= 0 || s.galutinis_med <= 0) {continue;}
+                if(s.galutinis_vid < 5.0 && s.galutinis_med < 5.0)
+                    loss.push_back(s);
+                if(s.galutinis_vid >= 5.0 && s.galutinis_med >= 5.0)
+                    win.push_back(s);
+            }   
+            auto eRusiavimas = std::chrono::system_clock::now(); 
+            std::chrono::duration<double> dRusiavimas = eRusiavimas - sRusiavimas;
+
+            cout << "Rusiavimas baigtas per " << dRusiavimas.count() << "s.";
+
+            break;
+        }
     }
-    auto eIsvestis = std::chrono::system_clock::now();
-    std::chrono::duration<double> dIsvestis = eIsvestis - sIsvestis;
-
-    cout << "Israsymas baigas per " << dIsvestis.count() << "s. Rezultatas luzeriai.txt / neluzeriai.txt failuose.";
-
-    rasoL.close();
-    rasoW.close();
 }

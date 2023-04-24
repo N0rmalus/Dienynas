@@ -35,3 +35,4 @@ using std::accumulate;
 using std::sort;
 using std::getline;
 using std::to_string;
+using std::remove_if;

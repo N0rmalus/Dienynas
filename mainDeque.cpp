@@ -8,21 +8,19 @@ int main() {
     char pasirinkimas, pasirinkimas2, skaityti;
     bool is_naujo = false, is_naujo2 = false;
 
-    std::chrono::duration<double> dGeneravimas, dSkaitymas;
-    auto sPrograma = std::chrono::system_clock::now();
     do {
         cout << "-----------------------------------------------------------------------" << endl;
         cout << "Duomenis skaityti is failo? (Y/N): ";
         cin >> skaityti;
 
         if(skaityti == 'Y' || skaityti == 'y') {
-            char pasirinkti;
+            char generuoti;
 
             do {
                 cout << endl << "Sugeneruoti faila? (Y/N): ";
-                cin >> pasirinkti;
+                cin >> generuoti;
 
-                if(pasirinkti == 'Y' || pasirinkti == 'y') {
+                if(generuoti == 'Y' || generuoti == 'y') {
                     int kiek_studentu, kiek_nd2;
                     string failasGen;
 
@@ -36,18 +34,15 @@ int main() {
                     cin >> failasGen; cout << endl;
 
                     cout << "Failas [" << failasGen << "] generuojamas... ";
-                    auto sGeneravimas = std::chrono::system_clock::now();
                     generatorius(failasGen, kiek_studentu, kiek_nd2);
-                    auto eGeneravimas = std::chrono::system_clock::now();
-                    dGeneravimas = eGeneravimas - sGeneravimas;
 
                     cout << "-----------------------------------------------------------------------" << endl;
 
                     break;
-                } else if(pasirinkti == 'N' || pasirinkti == 'n') {
+                } else if(generuoti == 'N' || generuoti == 'n') {
                     break;
                 } else {
-                    cout << endl << "Tokio pasirinkimo [" << pasirinkti << "] nera.";
+                    cout << endl << "Tokio pasirinkimo [" << generuoti << "] nera.";
 
                     continue;
                 }
@@ -64,13 +59,10 @@ int main() {
                 is_naujo = true;
                 continue;
             } else {
-                sPrograma = std::chrono::system_clock::now();
-
                 // Praleisti pirmą eilutę
                 string headers;
                 getline(skaito, headers);
 
-                auto sSkaitymas = std::chrono::system_clock::now();
                 while (skaito >> vardas >> pavarde) {
                     Studentas naujas_studentas;
                     naujas_studentas.vardas = vardas;
@@ -94,13 +86,10 @@ int main() {
 
                     studentai.push_back(naujas_studentas);
                 }
-                auto eSkaitymas = std::chrono::system_clock::now();
-                dSkaitymas = eSkaitymas - sSkaitymas;
-
+                
                 cout << "-----------------------------------------------------------------------" << endl;
 
                 skaito.close();
-                eSkaitymas = std::chrono::system_clock::now();
 
                 break;
             }
@@ -165,14 +154,6 @@ int main() {
     });
    
     isvestiDeque(studentai);
-    auto ePrograma = std::chrono::system_clock::now();
-    std::chrono::duration<double> dPrograma = ePrograma - sPrograma;
-
-    cout << endl << "-----------------------------------------------------------------------" << endl;
-
-    cout << "Studentu failo generavimas uztruko " << dGeneravimas.count() << "s." << endl;
-    cout << "Studentu duomenu nuskaitymas uztruko " << dSkaitymas.count() << "s." << endl;
-    cout << "Programos veikimas uztruko " << dPrograma.count() << "s." << endl;
     
     return 0;
 }
